@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.ApplicationModel;
 using Windows.Devices.Enumeration;
 using Windows.Devices.HumanInterfaceDevice;
@@ -18,6 +19,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Azure.Devices.Client;
+using Newtonsoft.Json;
 
 namespace PervasiveDigital.Verdant.WxStationNode
 {
@@ -44,6 +47,8 @@ namespace PervasiveDigital.Verdant.WxStationNode
         private DispatcherTimer _r1Timer;
         private DispatcherTimer _r2Timer;
 
+        private DeviceClient _deviceClient;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -54,6 +59,11 @@ namespace PervasiveDigital.Verdant.WxStationNode
             _watchersSuspended = false;
 
             _areAllDevicesEnumerated = false;
+
+            _deviceClient = DeviceClient.Create(
+                AzureIoT.HubUri, 
+                AuthenticationMethodFactory.CreateAuthenticationWithRegistrySymmetricKey(AzureIoT.DeviceId, AzureIoT.PrimaryKey),
+                TransportType.Http1);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs eventArgs)
@@ -356,6 +366,12 @@ namespace PervasiveDigital.Verdant.WxStationNode
                 var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(1);
                 var data = inputReport.Data.ToArray();
                 var report = AcuRite.AcuriteParser.ParseReport(data);
+                if (report != null)
+                {
+                    var messageString = JsonConvert.SerializeObject(report);
+                    var message = new Message(Encoding.ASCII.GetBytes(messageString));
+                    await _deviceClient.SendEventAsync(message);
+                }
             }
             catch (Exception ex)
             {
@@ -370,6 +386,12 @@ namespace PervasiveDigital.Verdant.WxStationNode
                 var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(2);
                 var data = inputReport.Data.ToArray();
                 var report = AcuRite.AcuriteParser.ParseReport(data);
+                if (report != null)
+                {
+                    var messageString = JsonConvert.SerializeObject(report);
+                    var message = new Message(Encoding.ASCII.GetBytes(messageString));
+                    await _deviceClient.SendEventAsync(message);
+                }
             }
             catch (Exception ex)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
 {
@@ -10,17 +11,23 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
     {
         public Report1(DateTime timeStamp, WindDirection dir)
         {
+            this.DeviceId = AzureIoT.DeviceId;
             this.TimeStamp = timeStamp;
             this.Direction = dir;
             this.WindHeading = GetHeading(dir);
-
         }
 
+        [JsonProperty("deviceId")]
+        public string DeviceId { get; private set; }
+
+        [JsonProperty("time")]
         public DateTime TimeStamp { get; private set; }
+        [JsonProperty("windDir")]
         public WindDirection Direction { get; private set; }
+        [JsonProperty("windHdg")]
         public double WindHeading { get; private set; }
 
-        private double GetHeading(WindDirection dir)
+        private static double GetHeading(WindDirection dir)
         {
             switch (dir)
             {
@@ -68,6 +75,7 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
             this.WindSpeed = windSpeed;
         }
 
+        [JsonProperty("windSpeed")]
         public double WindSpeed { get; private set; }
     }
 
@@ -78,8 +86,10 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
             this.Temperature = temperature;
             this.RelativeHumidity = relHum;
         }
-        
+
+        [JsonProperty("temperature")]
         public double Temperature { get; private set; }
+        [JsonProperty("relHum")]
         public int RelativeHumidity { get; private set; }
     }
 }

@@ -3,6 +3,19 @@ using System.Collections.Generic;
 
 namespace PervasiveDigital.Verdant.WxStationNode
 {
+    public class AzureIoT
+    {
+        // Insert secret codes here
+        public const string HubUri = "VerdantWxHub.azure-devices.net";
+#if JAYJAY
+        public const string DeviceId = "VerdantWxNode2";
+        public const string PrimaryKey = "XXX";
+#else
+        public const string DeviceId = "VerdantWxNode1";
+        public const string PrimaryKey = "XXX";
+#endif
+    }
+
     public enum DeviceType
     {
         SuperMutt,
