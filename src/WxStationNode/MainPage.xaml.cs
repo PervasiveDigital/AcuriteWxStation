@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
+using PervasiveDigital.Verdant.WxStationNode.AcuRite;
 
 namespace PervasiveDigital.Verdant.WxStationNode
 {
@@ -363,9 +364,23 @@ namespace PervasiveDigital.Verdant.WxStationNode
         {
             try
             {
-                var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(1);
-                var data = inputReport.Data.ToArray();
-                var report = AcuRite.AcuriteParser.ParseReport(data);
+                byte[] data;
+                bool haveReportA = false;
+                bool haveReportB = false;
+                Report1 report = new Report1();
+                do
+                {
+                    var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(1);
+                    data = inputReport.Data.ToArray();
+                    var reportType = (data[3] & 0x0f);
+                    if (reportType == 1)
+                        haveReportA = true;
+                    else if (reportType == 8)
+                        haveReportB = true;
+                    else
+                        continue;  // bad report ID
+                    AcuRite.AcuriteParser.ParseReport1(data, ref report);
+                } while (!haveReportA || !haveReportB);
                 if (report != null)
                 {
                     var messageString = JsonConvert.SerializeObject(report);
@@ -385,7 +400,7 @@ namespace PervasiveDigital.Verdant.WxStationNode
             {
                 var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(2);
                 var data = inputReport.Data.ToArray();
-                var report = AcuRite.AcuriteParser.ParseReport(data);
+                var report = AcuRite.AcuriteParser.ParseReport2(data);
                 if (report != null)
                 {
                     var messageString = JsonConvert.SerializeObject(report);

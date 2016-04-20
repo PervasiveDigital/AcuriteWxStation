@@ -9,12 +9,10 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
 {
     public class Report1 : IReport
     {
-        public Report1(DateTime timeStamp, WindDirection dir)
+        public Report1()
         {
             this.DeviceId = AzureIoT.DeviceId;
-            this.TimeStamp = timeStamp;
-            this.Direction = dir;
-            this.WindHeading = GetHeading(dir);
+            this.TimeStamp = DateTime.UtcNow;
         }
 
         [JsonProperty("deviceId")]
@@ -22,10 +20,34 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
 
         [JsonProperty("time")]
         public DateTime TimeStamp { get; private set; }
+
+        private WindDirection _dir;
+
         [JsonProperty("windDir")]
-        public WindDirection Direction { get; private set; }
+        public WindDirection WindDirection
+        {
+            get { return _dir; }
+            set
+            {
+                _dir = value;
+                this.WindHeading = GetHeading(value);
+            }
+        }
+
         [JsonProperty("windHdg")]
         public double WindHeading { get; private set; }
+
+        [JsonProperty("windSpeed")]
+        public double WindSpeed { get; set; }
+
+        [JsonProperty("temperature")]
+        public double Temperature { get; set; }
+
+        [JsonProperty("relHum")]
+        public int RelativeHumidity { get; set; }
+
+        [JsonProperty("rainCount")]
+        public int RainCount { get; set; }
 
         private static double GetHeading(WindDirection dir)
         {
@@ -66,30 +88,5 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
             }
             return -1.0;
         }
-    }
-
-    public class Report1a : Report1
-    {
-        public Report1a(DateTime timestamp, WindDirection dir, double windSpeed) : base(timestamp, dir)
-        {
-            this.WindSpeed = windSpeed;
-        }
-
-        [JsonProperty("windSpeed")]
-        public double WindSpeed { get; private set; }
-    }
-
-    public class Report1b : Report1
-    {
-        public Report1b(DateTime timestamp, WindDirection dir, double temperature, int relHum) : base(timestamp, dir)
-        {
-            this.Temperature = temperature;
-            this.RelativeHumidity = relHum;
-        }
-
-        [JsonProperty("temperature")]
-        public double Temperature { get; private set; }
-        [JsonProperty("relHum")]
-        public int RelativeHumidity { get; private set; }
     }
 }

@@ -9,23 +9,7 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
 {
     public static class AcuriteParser
     {
-        public static IReport ParseReport(byte[] data)
-        {
-            if (data==null || data.Length<1)
-                throw new ArgumentException("null or empty data packet");
-
-            switch (data[0])
-            {
-                case 1:
-                    return ParseReport1(data);
-                case 2:
-                    return ParseReport2(data);
-                default:
-                    throw new ArgumentException("invalid packet - bad report number");
-            }
-        }
-
-        public static Report1 ParseReport1(byte[] data)
+        public static void ParseReport1(byte[] data, ref Report1 report)
         {
             if (data.Length!=10)
                 throw new InvalidDataException("invalid length for report 1 packet");
@@ -35,24 +19,20 @@ namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
             if (nybble3 == 1)
             {
                 // wind speed, wind dir, rain
-                double windSpeed = ((data[4] & 0x1f) << 3) | (data[5] & 0x70 >> 4);
-                var windDir = data[5] & 0x0f;
-                int rainCount = data[7] & 0x7f;
-                result = new Report1a(DateTime.UtcNow, (WindDirection)windDir, windSpeed);
+                report.WindSpeed = ((data[4] & 0x1f) << 3) | (data[5] & 0x70 >> 4);
+                report.WindDirection = (WindDirection)(data[5] & 0x0f);
+                report.RainCount = data[7] & 0x7f;
             }
             else if (nybble3 == 8)
             {
                 // wind speed, temp, rel.hum
-                var windDir = data[5] & 0x0f;
+                report.WindDirection = (WindDirection)(data[5] & 0x0f);
                 double tempRaw = ((data[5] & 0x0f) << 7) | (data[6] & 0x7f);
-                double temperature = (tempRaw - 1000.0) / 10.0;
-                int relHum = data[7] & 0x7f;
-
-                result = new Report1b(DateTime.UtcNow, (WindDirection)windDir, temperature, relHum);
+                report.Temperature = (((tempRaw - 400.0) / 10.0) - 32) * 5.0/9.0;
+                report.RelativeHumidity = data[7] & 0x7f;
             }
             else
                 throw new InvalidDataException("invalid sub-record type");
-            return result;
         }
 
         public static Report2 ParseReport2(byte[] data)
