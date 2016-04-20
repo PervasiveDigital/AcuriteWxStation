@@ -95,7 +95,11 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcuriteParser.cs" />
+    <Compile Include="AcuRite\AcuriteParser.cs" />
+    <Compile Include="AcuRite\IReport.cs" />
+    <Compile Include="AcuRite\Report1.cs" />
+    <Compile Include="AcuRite\Report2.cs" />
+    <Compile Include="AcuRite\WindDirection.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>

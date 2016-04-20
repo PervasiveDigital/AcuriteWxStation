@@ -353,8 +353,9 @@ namespace PervasiveDigital.Verdant.WxStationNode
         {
             try
             {
-                var report = await EventHandlerForDevice.Current.Device.GetInputReportAsync(1);
-                var data = report.Data.ToArray();
+                var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(1);
+                var data = inputReport.Data.ToArray();
+                var report = AcuRite.AcuriteParser.ParseReport(data);
             }
             catch (Exception ex)
             {
@@ -366,8 +367,9 @@ namespace PervasiveDigital.Verdant.WxStationNode
         {
             try
             {
-                var report = await EventHandlerForDevice.Current.Device.GetInputReportAsync(2);
-                var data = report.Data.ToArray();
+                var inputReport = await EventHandlerForDevice.Current.Device.GetInputReportAsync(2);
+                var data = inputReport.Data.ToArray();
+                var report = AcuRite.AcuriteParser.ParseReport(data);
             }
             catch (Exception ex)
             {

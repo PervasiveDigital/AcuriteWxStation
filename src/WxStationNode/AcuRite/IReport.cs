@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PervasiveDigital.Verdant.WxStationNode
+namespace PervasiveDigital.Verdant.WxStationNode.AcuRite
 {
-    public class AcuriteParser
+    public interface IReport
     {
     }
 }
