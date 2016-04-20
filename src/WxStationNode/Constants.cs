@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define JAYJAY
+using System;
 using System.Collections.Generic;
 
 namespace PervasiveDigital.Verdant.WxStationNode
@@ -7,13 +8,8 @@ namespace PervasiveDigital.Verdant.WxStationNode
     {
         // Insert secret codes here
         public const string HubUri = "VerdantWxHub.azure-devices.net";
-#if JAYJAY
-        public const string DeviceId = "VerdantWxNode2";
-        public const string PrimaryKey = "XXX";
-#else
-        public const string DeviceId = "VerdantWxNode1";
-        public const string PrimaryKey = "XXX";
-#endif
+        public const string DeviceId = "{put your device id here}";
+        public const string PrimaryKey = "{Put your key here}";
     }
 
     public enum DeviceType
